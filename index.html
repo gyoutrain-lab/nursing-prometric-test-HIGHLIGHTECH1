@@ -3,552 +3,393 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nurse Technician Day 1 Test Mastery Simulator</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Nurse Technician Day 1: Advanced Clinical Synthesis Test</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .option-card { transition: all 0.2s ease-in-out; }
-        .option-card:hover { transform: translateY(-1px); }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; }
+        .header { background-color: #2c3e50; color: white; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 30px; }
+        .progress-container { width: 100%; background-color: #ddd; border-radius: 10px; margin-bottom: 20px; }
+        .progress-bar { height: 20px; background-color: #27ae60; width: 0%; border-radius: 10px; transition: width 0.3s; }
+        .question-card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: none; }
+        .question-card.active { display: block; }
+        .option { display: block; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; transition: 0.2s; }
+        .option:hover { background-color: #ecf0f1; }
+        .option.selected { background-color: #3498db; color: white; border-color: #2980b9; }
+        .btn-nav { background-color: #2c3e50; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 20px; }
+        .btn-nav:disabled { background-color: #95a5a6; }
+        #results-screen { display: none; background: white; padding: 30px; border-radius: 8px; text-align: center; }
+        .rationale { display: none; margin-top: 15px; padding: 15px; background-color: #e8f6f3; border-left: 5px solid #1abc9c; font-size: 0.9em; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+<body>
 
-    <header class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
-        <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="bg-blue-600 text-white p-2 rounded-lg font-bold text-sm tracking-wider">SKILLS</div>
-                <div>
-                    <h1 class="text-lg font-bold text-slate-800">Nurse Technician Test Mastery</h1>
-                    <p class="text-xs text-slate-500">Day 1: Fundamentals of Care & Patient Safety</p>
-                </div>
-            </div>
-            <div id="timer-container" class="flex items-center space-x-2 bg-slate-50 border border-slate-200 px-4 py-2 rounded-lg text-slate-700 font-mono text-sm">
-                <span>Time Remaining:</span>
-                <span id="time-display" class="font-bold text-blue-600">25:00</span>
-            </div>
-        </div>
-    </header>
+<div class="header">
+    <h1>Nurse Technician Day 1</h1>
+    <p>Fundamentals of Care & Patient Safety Test</p>
+</div>
 
-    <main class="max-w-5xl w-full mx-auto px-4 py-8 flex-grow">
+<div class="progress-container">
+    <div class="progress-bar" id="progress-bar"></div>
+</div>
+
+<div id="quiz-container">
+</div>
+
+<div id="results-screen">
+    <h2>Exam Complete</h2>
+    <p id="score-text"></p>
+    <button class="btn-nav" onclick="location.reload()">Restart Exam</button>
+</div>
+
+<script>
+    const questions = [
+        {
+            q: "A nurse technician is preparing to perform hand hygiene before a routine patient dressing change. According to the World Health Organization (WHO), what is the minimum recommended duration for rubbing hands with soap and water?",
+            options: [
+                "5 to 10 seconds",
+                "20 to 30 seconds",
+                "60 to 90 seconds",
+                "3 minutes"
+            ],
+            correct: 1,
+            rationale: "Effective friction and soap coverage require at least 20 seconds to significantly reduce the microbial load on the skin."
+        },
+        {
+            q: "While taking the vital signs of an adult patient, the nurse technician notes a pulse rate of 115 beats per minute. Which term should the technician use to document this finding?",
+            options: [
+                "Bradycardia",
+                "Eupnea",
+                "Tachycardia",
+                "Hypertension"
+            ],
+            correct: 2,
+            rationale: "A normal adult heart rate is 60–100 bpm. Anything above 100 bpm is classified as tachycardia; below 60 bpm is bradycardia."
+        },
+        {
+            q: "To prevent the development of Pressure Ulcers (Pressure Injuries) in a bedridden patient, the nurse technician should ensure the patient is repositioned at least every:",
+            options: [
+                "1 hour",
+                "2 hours",
+                "4 hours",
+                "8 hours"
+            ],
+            correct: 1,
+            rationale: "Standard protocol for pressure relief in bedbound patients is turning every 2 hours to prevent prolonged ischemia to bony prominences."
+        },
+        {
+            q: "When moving a patient from the bed to a stretcher, which body mechanics principle should the nurse technician apply to prevent self-injury?",
+            options: [
+                "Bend at the waist to use back muscles.",
+                "Keep the feet close together for stability.",
+                "Keep the weight of the patient as far away from the body as possible.",
+                "Keep the back straight and bend at the knees to use leg muscles."
+            ],
+            correct: 3,
+            rationale: "Using the large muscles of the legs rather than the small muscles of the back prevents strain and musculoskeletal injuries."
+        },
+        {
+            q: "A patient is on Droplet Precautions for suspected seasonal influenza. Which personal protective equipment (PPE) is required for the nurse technician when entering the room to provide direct care?",
+            options: [
+                "N95 respirator and gloves",
+                "Surgical mask and gloves",
+                "Gown, gloves, and shoe covers only",
+                "No PPE is required unless touching body fluids"
+            ],
+            correct: 1,
+            rationale: "Droplets are larger and travel shorter distances than airborne particles. A standard surgical mask is sufficient for droplet protection."
+        },
+        {
+            q: "When preparing to administer a medication, the nurse technician must verify the 'Five Rights' of medication administration. Which of the following is included in these rights?",
+            options: [
+                "Right Room, Right Cost, Right Equipment.",
+                "Right Patient, Right Drug, Right Dose, Right Route, Right Time.",
+                "Right Diagnosis, Right Relative, Right Ward.",
+                "Right Physician, Right Insurance, Right Diet."
+            ],
+            correct: 1,
+            rationale: "These five rights are the foundation of medication safety and must be checked three times before administration to prevent errors."
+        },
+        {
+            q: "A nurse technician is taking an oral temperature on a patient who has just finished drinking a cup of hot coffee. Which action should the technician take to ensure an accurate reading?",
+            options: [
+                "Take the temperature immediately and subtract 1°C.",
+                "Wait 20 to 30 minutes before measuring the temperature.",
+                "Use the axillary route instead and add 2°C.",
+                "Blow cold air into the patient’s mouth for one minute first."
+            ],
+            correct: 1,
+            rationale: "Hot or cold liquids temporarily alter the temperature of the oral tissues. Waiting allows the mouth to return to its baseline temperature."
+        },
+        {
+            q: "Which of the following is the most effective way for a nurse technician to prevent the spread of Healthcare-Associated Infections (HAIs)?",
+            options: [
+                "Ensuring the patient takes all prescribed antibiotics.",
+                "Performing consistent and thorough hand hygiene.",
+                "Keeping all windows in the patient’s room closed.",
+                "Wearing a double pair of gloves for all patient contact."
+            ],
+            correct: 1,
+            rationale: "Hand hygiene is globally recognized as the single most important practice to stop the transmission of pathogens between patients."
+        },
+        {
+            q: "A patient is at high risk for Falls. Which intervention should the nurse technician implement as part of a standard fall prevention protocol?",
+            options: [
+                "Keep the bed in the highest position to make it easier for the patient to stand.",
+                "Ensure the call bell is within the patient's reach at all times.",
+                "Keep all four side rails up to prevent the patient from getting out of bed.",
+                "Turn off all lights in the room at night so the patient sleeps better."
+            ],
+            correct: 1,
+            rationale: "Keeping the call bell close allows the patient to ask for help before attempting to move on their own, significantly reducing fall risk."
+        },
+        {
+            q: "While assisting a patient with a bed bath, the technician notices a new area of redness on the patient's heel that does not disappear when pressed. What is the priority action?",
+            options: [
+                "Massage the reddened area to improve blood flow.",
+                "Apply a hot water bottle to the area.",
+                "Report the finding to the registered nurse (RN) immediately.",
+                "Rub the area with alcohol to disinfect the skin."
+            ],
+            correct: 2,
+            rationale: "Non-blanchable redness indicates a Stage 1 Pressure Injury. Massage is contraindicated as it can cause further tissue damage; reporting allows for a plan of care."
+        },
+        {
+            q: "A nurse technician is documenting a patient's liquid intake. The patient drank 4 ounces of apple juice and 6 ounces of water. How many milliliters (mL) should the technician record in the intake and output (I&O) flow sheet?",
+            options: [
+                "150 mL",
+                "300 mL",
+                "450 mL",
+                "600 mL"
+            ],
+            correct: 1,
+            rationale: "1 ounce is approximately 30 mL. Total intake was 10 ounces (10×30=300 mL). Accurate I&O is critical for patients with heart or kidney issues."
+        },
+        {
+            q: "While using an electric vitals machine, the nurse technician notices the power cord is frayed and sparking slightly. What is the immediate priority action?",
+            options: [
+                "Finish taking the patient's blood pressure quickly.",
+                "Unplug the machine using the plastic plug head and remove it from service.",
+                "Wrap the frayed wire with medical tape.",
+                "Tell the patient not to touch the wire."
+            ],
+            correct: 1,
+            rationale: "Frayed wires are a fire and shock hazard. Faulty equipment must be removed immediately and labeled 'Do Not Use' according to hospital policy."
+        },
+        {
+            q: "The nurse technician finds a patient lying on the floor next to the bed. After ensuring the scene is safe, what is the technician's first clinical action?",
+            options: [
+                "Help the patient get back into bed immediately.",
+                "Assess the patient for responsiveness and stay with them while calling for help.",
+                "Run to the nursing station to find the doctor.",
+                "Go get a wheelchair to transport the patient to X-ray."
+            ],
+            correct: 1,
+            rationale: "Never move a patient after a fall until they have been assessed for injury. Staying with the patient ensures their safety while the RN is notified."
+        },
+        {
+            q: "Which of the following is an example of an objective observation that a nurse technician should document in the medical record?",
+            options: [
+                "The patient seems very angry today.",
+                "The patient says they have a headache.",
+                "The patient has a 2 cm bruise on the right forearm.",
+                "The patient appears to be in a lot of pain."
+            ],
+            correct: 2,
+            rationale: "Objective data is what you can see, hear, feel, or measure (facts). Subjective data is what the patient feels or what the nurse 'thinks' is happening."
+        },
+        {
+            q: "When providing oral care to an unconscious patient, which position is safest to prevent the patient from inhaling (aspirating) fluids?",
+            options: [
+                "Supine (flat on their back).",
+                "Side-lying (Lateral) with the head turned to the side.",
+                "Trendelenburg (head lower than feet).",
+                "High-Fowler's (sitting straight up)."
+            ],
+            correct: 1,
+            rationale: "Placing an unconscious patient on their side allows secretions to drain out of the mouth by gravity rather than down into the lungs."
+        },
+        {
+            q: "A nurse technician is assisting a patient with left-sided weakness to walk using a cane. On which side should the technician instruct the patient to hold the cane?",
+            options: [
+                "On the left (weak) side to provide direct support.",
+                "On the right (strong) side to widen the base of support.",
+                "In whichever hand the patient feels more comfortable.",
+                "The patient should hold the cane with both hands in front of them."
+            ],
+            correct: 1,
+            rationale: "The cane is held on the 'strong' side. It moves forward at the same time as the 'weak' leg to shift weight away from the affected side and improve balance."
+        },
+        {
+            q: "Which medical term should the nurse technician use to document that a patient is experiencing difficulty breathing?",
+            options: [
+                "Apnea",
+                "Dyspnea",
+                "Orthopnea",
+                "Tachypnea"
+            ],
+            correct: 1,
+            rationale: "Dys- (difficult/painful) and -pnea (breathing). Apnea means no breathing; Orthopnea is difficulty breathing while lying flat; Tachypnea is fast breathing."
+        },
+        {
+            q: "When performing perineal care for a female patient, which direction should the nurse technician wipe to prevent introducing bacteria into the urinary tract?",
+            options: [
+                "From back to front (rectum to pubis).",
+                "From front to back (pubis to rectum).",
+                "In a circular motion around the labia.",
+                "It does not matter as long as soap is used."
+            ],
+            correct: 1,
+            rationale: "Wiping 'clean to dirty' (front to back) prevents E. coli and other fecal bacteria from entering the urethra, reducing the risk of Urinary Tract Infections (UTIs)."
+        },
+        {
+            q: "A patient is being placed in Fowler’s position. How should the nurse technician adjust the bed?",
+            options: [
+                "The head of the bed is raised to an angle between 45° and 60°.",
+                "The foot of the bed is raised higher than the head of the bed.",
+                "The bed is kept completely flat with the patient on their stomach.",
+                "The head of the bed is lowered to 15° below the level of the heart."
+            ],
+            correct: 0,
+            rationale: "Fowler's position is used to improve expansion of the lungs and decrease the work of breathing. Semi-Fowler's is 30°–45°; High-Fowler's is 60°–90°."
+        },
+        {
+            q: "The nurse technician is assigned to weigh a patient with congestive heart failure (CHF) every morning. What is the most important factor to ensure the weight is accurate and comparable to yesterday’s?",
+            options: [
+                "Weigh the patient at the same time using the same scale and similar clothing.",
+                "Weigh the patient immediately after they finish their breakfast.",
+                "Ask the patient how much they think they weigh before starting.",
+                "Weigh the patient only if they feel strong enough to stand."
+            ],
+            correct: 0,
+            rationale: "For CHF patients, weight changes reflect fluid status. Using the same conditions ensures that any weight gain is due to fluid retention rather than external variables."
+        },
+        {
+            q: "The nurse technician enters a room and finds a fire starting in a trash can. Which acronym should the technician follow to prioritize actions during a fire emergency?",
+            options: [
+                "PASS",
+                "RACE",
+                "ABCD",
+                "RICE"
+            ],
+            correct: 1,
+            rationale: "RACE stands for Rescue (anyone in danger), Alarm (pull the box), Contain (close doors), and Extinguish. PASS is for using the extinguisher itself."
+        },
+        {
+            q: "A patient is on a Clear Liquid Diet. Which of the following items is the nurse technician permitted to provide to this patient?",
+            options: [
+                "Orange juice with pulp",
+                "Vanilla ice cream",
+                "Apple juice or chicken broth",
+                "Cream of mushroom soup"
+            ],
+            correct: 2,
+            rationale: "Clear liquids are those you can see through at room temperature. Pulp, dairy, and 'creamed' items are considered full liquids or solid food."
+        },
+        {
+            q: "When providing a bed bath to an elderly patient, the nurse technician should be particularly careful because aging skin:",
+            options: [
+                "Becomes thicker and more resistant to injury.",
+                "Loses elasticity and becomes more fragile and thin.",
+                "Produces more oil, making it less likely to dry out.",
+                "Has increased blood flow, leading to faster healing."
+            ],
+            correct: 1,
+            rationale: "Elderly skin has less subcutaneous fat and moisture. Harsh scrubbing or hot water can easily cause 'skin tears' or irritation."
+        },
+        {
+            q: "A nurse technician is assigned to assist a patient with a weakened right arm to put on a front-opening gown. What is the correct procedure?",
+            options: [
+                "Put the gown on the left arm first, then the right.",
+                "Put the gown on the right arm first, then the left.",
+                "It does not matter which arm is dressed first.",
+                "The patient should not wear a gown with a weak arm."
+            ],
+            correct: 1,
+            rationale: "To dress, you 'start with the weak' (put the sleeve on the affected arm first). To undress, you 'start with the strong' (remove the sleeve from the unaffected arm first)."
+        },
+        {
+            q: "A patient offers a nurse technician a cash tip of $50 as a 'thank you' for the excellent care provided. What is the most appropriate professional response?",
+            options: [
+                "Accept the money and put it in the staff breakroom fund.",
+                "Politely decline the gift, explaining that it is against hospital policy.",
+                "Accept the money but report it to the supervisor later.",
+                "Ask the patient to give the money to the nurse instead."
+            ],
+            correct: 1,
+            rationale: "Accepting money from patients is a boundary violation and is prohibited by most healthcare institutions. A verbal 'thank you' or a note is the appropriate way to accept gratitude."
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    function initQuiz() {
+        const container = document.getElementById('quiz-container');
+        questions.forEach((q, index) => {
+            const card = document.createElement('div');
+            card.className = `question-card ${index === 0 ? 'active' : ''}`;
+            card.innerHTML = `
+                <h3>Question ${index + 1}</h3>
+                <p>${q.q}</p>
+                ${q.options.map((opt, i) => `<div class="option" onclick="selectOption(${index}, ${i}, this)">${opt}</div>`).join('')}
+                <div class="rationale" id="rationale-${index}"><strong>Rationale:</strong> ${q.rationale}</div>
+                <button class="btn-nav" id="next-btn-${index}" onclick="nextQuestion()" style="display:none">Next Question</button>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function selectOption(qIndex, oIndex, element) {
+        const card = document.querySelectorAll('.question-card')[qIndex];
+        const options = card.querySelectorAll('.option');
         
-        <div id="welcome-screen" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center max-w-2xl mx-auto">
-            <div class="inline-flex items-center justify-center p-3 bg-blue-50 rounded-full mb-4 text-blue-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                </svg>
-            </div>
-            <h2 class="text-2xl font-bold text-slate-800 mb-3">Nurse Technician Day 1 Exam Simulator</h2>
-            <p class="text-slate-500 mb-8 max-w-lg mx-auto leading-relaxed">
-                You are about to start a 25-question mastery assessment designed to test your knowledge on standard bedside protocols, patient safety domains, and fundamental nursing techniques.
-            </p>
-            <button onclick="startExam()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg shadow-blue-500/20 transition-all duration-200 cursor-pointer">
-                Start Examination
-            </button>
-        </div>
+        // Prevent multiple clicks
+        if (card.querySelector('.selected')) return;
 
-        <div id="exam-screen" class="hidden space-y-6">
-            <div class="bg-white border border-slate-200 rounded-xl p-4 flex justify-between items-center text-sm">
-                <div class="text-slate-500">
-                    Question <span id="current-question-num" class="font-bold text-slate-800">1</span> of <span id="total-question-num" class="font-bold">25</span>
-                </div>
-                <div class="w-1/2 bg-slate-100 rounded-full h-2 overflow-hidden">
-                    <div id="progress-bar" class="bg-blue-600 h-2 transition-all duration-300" style="width: 1%;"></div>
-                </div>
-                <div class="text-slate-500 font-medium">
-                    Score: <span id="current-score" class="text-blue-600 font-bold">0</span> points
-                </div>
-            </div>
-
-            <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
-                <span class="text-xs font-bold text-blue-600 tracking-wider uppercase bg-blue-50 px-2.5 py-1 rounded-md">Vignette & Skill Focus</span>
-                <p id="question-text" class="text-lg font-medium mt-4 text-slate-800 leading-relaxed">
-                    [Question text will be loaded here dynamically]
-                </p>
-            </div>
-
-            <div id="options-container" class="grid gap-4 md:grid-cols-2">
-                </div>
-
-            <div class="flex justify-between items-center pt-4">
-                <button id="prev-btn" onclick="prevQuestion()" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 bg-white font-medium hover:bg-slate-50 transition cursor-pointer">
-                    Back
-                </button>
-                <button id="next-btn" onclick="nextQuestion()" class="px-6 py-2.5 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 shadow-sm transition cursor-pointer">
-                    Save & Continue
-                </button>
-            </div>
-        </div>
-
-        <div id="result-screen" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-8 max-w-3xl mx-auto">
-            <div class="text-center mb-10 border-b border-slate-100 pb-8">
-                <div id="result-badge" class="inline-flex items-center justify-center p-4 rounded-full bg-green-50 text-green-600 mb-4 animate-bounce">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <h2 id="result-title" class="text-3xl font-extrabold text-slate-900 mb-2">Test Complete</h2>
-                <p id="result-subtitle" class="text-slate-500 max-w-md mx-auto">Review your performance summary and rationales below.</p>
-
-                <div class="flex justify-center gap-8 mt-8">
-                    <div class="bg-slate-50 px-6 py-4 rounded-xl border border-slate-200">
-                        <p class="text-xs text-slate-400 uppercase tracking-wider font-bold mb-1">Final Score</p>
-                        <p id="final-score" class="text-3xl font-black text-slate-800">0%</p>
-                    </div>
-                    <div class="bg-slate-50 px-6 py-4 rounded-xl border border-slate-200">
-                        <p class="text-xs text-slate-400 uppercase tracking-wider font-bold mb-1">Status</p>
-                        <p id="pass-status" class="text-3xl font-black text-blue-600">--</p>
-                    </div>
-                </div>
-            </div>
-
-            <h3 class="text-lg font-bold text-slate-800 mb-6">Answer Key & Rationales</h3>
-            <div id="rationales-container" class="space-y-6">
-                </div>
-
-            <div class="mt-12 text-center">
-                <button onclick="resetExam()" class="bg-slate-900 hover:bg-slate-800 text-white font-medium px-6 py-3 rounded-xl transition cursor-pointer">
-                    Restart Simulator
-                </button>
-            </div>
-        </div>
-
-    </main>
-
-    <footer class="bg-white border-t border-slate-100 py-6 text-center text-xs text-slate-400">
-        <p>Nurse Technician Training Portal &copy; 2026. Designed for GitHub Pages Deployment.</p>
-    </footer>
-
-    <script>
-        const examQuestions = [
-            {
-                q: "A nurse technician is preparing to perform hand hygiene before a routine patient dressing change. According to the World Health Organization (WHO), what is the minimum recommended duration for rubbing hands with soap and water?",
-                a: "B. 20 to 30 seconds",
-                r: "Effective friction and soap coverage require at least 20 seconds to significantly reduce the microbial load on the skin.",
-                opt: [
-                    "A. 5 to 10 seconds",
-                    "B. 20 to 30 seconds",
-                    "C. 60 to 90 seconds",
-                    "D. 3 minutes"
-                ]
-            },
-            {
-                q: "While taking the vital signs of an adult patient, the nurse technician notes a pulse rate of 115 beats per minute. Which term should the technician use to document this finding?",
-                a: "C. Tachycardia",
-                r: "A normal adult heart rate is 60–100 bpm. Anything above 100 bpm is classified as tachycardia; below 60 bpm is bradycardia.",
-                opt: [
-                    "A. Bradycardia",
-                    "B. Eupnea",
-                    "C. Tachycardia",
-                    "D. Hypertension"
-                ]
-            },
-            {
-                q: "To prevent the development of Pressure Ulcers (Pressure Injuries) in a bedridden patient, the nurse technician should ensure the patient is repositioned at least every:",
-                a: "B. 2 hours",
-                r: "Standard protocol for pressure relief in bedbound patients is turning every 2 hours to prevent prolonged ischemia to bony prominences.",
-                opt: [
-                    "A. 1 hour",
-                    "B. 2 hours",
-                    "C. 4 hours",
-                    "D. 8 hours"
-                ]
-            },
-            {
-                q: "When moving a patient from the bed to a stretcher, which body mechanics principle should the nurse technician apply to prevent self-injury?",
-                a: "D. Keep the back straight and bend at the knees to use leg muscles.",
-                r: "Using the large muscles of the legs rather than the small muscles of the back prevents strain and musculoskeletal injuries.",
-                opt: [
-                    "A. Bend at the waist to use back muscles.",
-                    "B. Keep the feet close together for stability.",
-                    "C. Keep the weight of the patient as far away from the body as possible.",
-                    "D. Keep the back straight and bend at the knees to use leg muscles."
-                ]
-            },
-            {
-                q: "A patient is on Droplet Precautions for suspected seasonal influenza. Which personal protective equipment (PPE) is required for the nurse technician when entering the room to provide direct care?",
-                a: "B. Surgical mask and gloves",
-                r: "Droplets are larger and travel shorter distances than airborne particles. A standard surgical mask is sufficient for droplet protection.",
-                opt: [
-                    "A. N95 respirator and gloves",
-                    "B. Surgical mask and gloves",
-                    "C. Gown, gloves, and shoe covers only",
-                    "D. No PPE is required unless touching body fluids"
-                ]
-            },
-            {
-                q: "When preparing to administer a medication, the nurse technician must verify the 'Five Rights' of medication administration. Which of the following is included in these rights?",
-                a: "B. Right Patient, Right Drug, Right Dose, Right Route, Right Time.",
-                r: "These five rights are the foundation of medication safety and must be checked three times before administration to prevent errors.",
-                opt: [
-                    "A. Right Room, Right Cost, Right Equipment.",
-                    "B. Right Patient, Right Drug, Right Dose, Right Route, Right Time.",
-                    "C. Right Diagnosis, Right Relative, Right Ward.",
-                    "D. Right Physician, Right Insurance, Right Diet."
-                ]
-            },
-            {
-                q: "A nurse technician is taking an oral temperature on a patient who has just finished drinking a cup of hot coffee. Which action should the technician take to ensure an accurate reading?",
-                a: "B. Wait 20 to 30 minutes before measuring the temperature.",
-                r: "Hot or cold liquids temporarily alter the temperature of the oral tissues. Waiting allows the mouth to return to its baseline temperature.",
-                opt: [
-                    "A. Take the temperature immediately and subtract 1°C.",
-                    "B. Wait 20 to 30 minutes before measuring the temperature.",
-                    "C. Use the axillary route instead and add 2°C.",
-                    "D. Blow cold air into the patient’s mouth for one minute first."
-                ]
-            },
-            {
-                q: "Which of the following is the most effective way for a nurse technician to prevent the spread of Healthcare-Associated Infections (HAIs)?",
-                a: "B. Performing consistent and thorough hand hygiene.",
-                r: "Hand hygiene is globally recognized as the single most important practice to stop the transmission of pathogens between patients.",
-                opt: [
-                    "A. Ensuring the patient takes all prescribed antibiotics.",
-                    "B. Performing consistent and thorough hand hygiene.",
-                    "C. Keeping all windows in the patient’s room closed.",
-                    "D. Wearing a double pair of gloves for all patient contact."
-                ]
-            },
-            {
-                q: "A patient is at high risk for Falls. Which intervention should the nurse technician implement as part of a standard fall prevention protocol?",
-                a: "B. Ensure the call bell is within the patient's reach at all times.",
-                r: "Keeping the call bell close allows the patient to ask for help before attempting to move on their own, significantly reducing fall risk.",
-                opt: [
-                    "A. Keep the bed in the highest position to make it easier for the patient to stand.",
-                    "B. Ensure the call bell is within the patient's reach at all times.",
-                    "C. Keep all four side rails up to prevent the patient from getting out of bed.",
-                    "D. Turn off all lights in the room at night so the patient sleeps better."
-                ]
-            },
-            {
-                q: "While assisting a patient with a bed bath, the technician notices a new area of redness on the patient's heel that does not disappear when pressed. What is the priority action?",
-                a: "C. Report the finding to the registered nurse (RN) immediately.",
-                r: "Non-blanchable redness indicates a Stage 1 Pressure Injury. Massage is contraindicated as it can cause further tissue damage; reporting allows for a plan of care.",
-                opt: [
-                    "A. Massage the reddened area to improve blood flow.",
-                    "B. Apply a hot water bottle to the area.",
-                    "C. Report the finding to the registered nurse (RN) immediately.",
-                    "D. Rub the area with alcohol to disinfect the skin."
-                ]
-            },
-            {
-                q: "A nurse technician is documenting a patient's liquid intake. The patient drank 4 ounces of apple juice and 6 ounces of water. How many milliliters (mL) should the technician record in the intake and output (I&O) flow sheet?",
-                a: "B. 300 mL",
-                r: "1 ounce is approximately 30 mL. Total intake was 10 ounces (10×30=300 mL). Accurate I&O is critical for patients with heart or kidney issues.",
-                opt: [
-                    "A. 150 mL",
-                    "B. 300 mL",
-                    "C. 450 mL",
-                    "D. 600 mL"
-                ]
-            },
-            {
-                q: "While using an electric vitals machine, the nurse technician notices the power cord is frayed and sparking slightly. What is the immediate priority action?",
-                a: "B. Unplug the machine using the plastic plug head and remove it from service.",
-                r: "Frayed wires are a fire and shock hazard. Faulty equipment must be removed immediately and labeled 'Do Not Use' according to hospital policy.",
-                opt: [
-                    "A. Finish taking the patient's blood pressure quickly.",
-                    "B. Unplug the machine using the plastic plug head and remove it from service.",
-                    "C. Wrap the frayed wire with medical tape.",
-                    "D. Tell the patient not to touch the wire."
-                ]
-            },
-            {
-                q: "The nurse technician finds a patient lying on the floor next to the bed. After ensuring the scene is safe, what is the technician's first clinical action?",
-                a: "B. Assess the patient for responsiveness and stay with them while calling for help.",
-                r: "Never move a patient after a fall until they have been assessed for injury. Staying with the patient ensures their safety while the RN is notified.",
-                opt: [
-                    "A. Help the patient get back into bed immediately.",
-                    "B. Assess the patient for responsiveness and stay with them while calling for help.",
-                    "C. Run to the nursing station to find the doctor.",
-                    "D. Go get a wheelchair to transport the patient to X-ray."
-                ]
-            },
-            {
-                q: "Which of the following is an example of an objective observation that a nurse technician should document in the medical record?",
-                a: "C. 'The patient has a 2 cm bruise on the right forearm.'",
-                r: "Objective data is what you can see, hear, feel, or measure (facts). Subjective data is what the patient feels or what the nurse 'thinks' is happening.",
-                opt: [
-                    "A. 'The patient seems very angry today.'",
-                    "B. 'The patient says they have a headache.'",
-                    "C. 'The patient has a 2 cm bruise on the right forearm.'",
-                    "D. 'The patient appears to be in a lot of pain.'"
-                ]
-            },
-            {
-                q: "When providing oral care to an unconscious patient, which position is safest to prevent the patient from inhaling (aspirating) fluids?",
-                a: "B. Side-lying (Lateral) with the head turned to the side.",
-                r: "Placing an unconscious patient on their side allows secretions to drain out of the mouth by gravity rather than down into the lungs.",
-                opt: [
-                    "A. Supine (flat on their back).",
-                    "B. Side-lying (Lateral) with the head turned to the side.",
-                    "C. Trendelenburg (head lower than feet).",
-                    "D. High-Fowler's (sitting straight up)."
-                ]
-            },
-            {
-                q: "A nurse technician is assisting a patient with left-sided weakness to walk using a cane. On which side should the technician instruct the patient to hold the cane?",
-                a: "B. On the right (strong) side to widen the base of support.",
-                r: "The cane is held on the 'strong' side. It moves forward at the same time as the 'weak' leg to shift weight away from the affected side and improve balance.",
-                opt: [
-                    "A. On the left (weak) side to provide direct support.",
-                    "B. On the right (strong) side to widen the base of support.",
-                    "C. In whichever hand the patient feels more comfortable.",
-                    "D. The patient should hold the cane with both hands in front of them."
-                ]
-            },
-            {
-                q: "Which medical term should the nurse technician use to document that a patient is experiencing difficulty breathing?",
-                a: "B. Dyspnea",
-                r: "Dys- (difficult/painful) and -pnea (breathing). Apnea means no breathing; Orthopnea is difficulty breathing while lying flat; Tachypnea is fast breathing.",
-                opt: [
-                    "A. Apnea",
-                    "B. Dyspnea",
-                    "C. Orthopnea",
-                    "D. Tachypnea"
-                ]
-            },
-            {
-                q: "When performing perineal care for a female patient, which direction should the nurse technician wipe to prevent introducing bacteria into the urinary tract?",
-                a: "B. From front to back (pubis to rectum).",
-                r: "Wiping 'clean to dirty' (front to back) prevents E. coli and other fecal bacteria from entering the urethra, reducing the risk of Urinary Tract Infections (UTIs).",
-                opt: [
-                    "A. From back to front (rectum to pubis).",
-                    "B. From front to back (pubis to rectum).",
-                    "C. In a circular motion around the labia.",
-                    "D. It does not matter as long as soap is used."
-                ]
-            },
-            {
-                q: "A patient is being placed in Fowler’s position. How should the nurse technician adjust the bed?",
-                a: "A. The head of the bed is raised to an angle between 45° and 60°.",
-                r: "Fowler's position is used to improve expansion of the lungs and decrease the work of breathing. Semi-Fowler's is 30°–45°; High-Fowler's is 60°–90°.",
-                opt: [
-                    "A. The head of the bed is raised to an angle between 45° and 60°.",
-                    "B. The foot of the bed is raised higher than the head of the bed.",
-                    "C. The bed is kept completely flat with the patient on their stomach.",
-                    "D. The head of the bed is lowered to 15° below the level of the heart."
-                ]
-            },
-            {
-                q: "The nurse technician is assigned to weigh a patient with congestive heart failure (CHF) every morning. What is the most important factor to ensure the weight is accurate and comparable to yesterday’s?",
-                a: "A. Weigh the patient at the same time using the same scale and similar clothing.",
-                r: "For CHF patients, weight changes reflect fluid status. Using the same conditions ensures that any weight gain is due to fluid retention rather than external variables.",
-                opt: [
-                    "A. Weigh the patient at the same time using the same scale and similar clothing.",
-                    "B. Weigh the patient immediately after they finish their breakfast.",
-                    "C. Ask the patient how much they think they weigh before starting.",
-                    "D. Weigh the patient only if they feel strong enough to stand."
-                ]
-            },
-            {
-                q: "The nurse technician enters a room and finds a fire starting in a trash can. Which acronym should the technician follow to prioritize actions during a fire emergency?",
-                a: "B. RACE",
-                r: "RACE stands for Rescue (anyone in danger), Alarm (pull the box), Contain (close doors), and Extinguish. PASS is for using the extinguisher itself.",
-                opt: [
-                    "A. PASS",
-                    "B. RACE",
-                    "C. ABCD",
-                    "D. RICE"
-                ]
-            },
-            {
-                q: "A patient is on a Clear Liquid Diet. Which of the following items is the nurse technician permitted to provide to this patient?",
-                a: "C. Apple juice or chicken broth",
-                r: "Clear liquids are those you can see through at room temperature. Pulp, dairy, and 'creamed' items are considered full liquids or solid food.",
-                opt: [
-                    "A. Orange juice with pulp",
-                    "B. Vanilla ice cream",
-                    "C. Apple juice or chicken broth",
-                    "D. Cream of mushroom soup"
-                ]
-            },
-            {
-                q: "When providing a bed bath to an elderly patient, the nurse technician should be particularly careful because aging skin:",
-                a: "B. Loses elasticity and becomes more fragile and thin.",
-                r: "Elderly skin has less subcutaneous fat and moisture. Harsh scrubbing or hot water can easily cause 'skin tears' or irritation.",
-                opt: [
-                    "A. Becomes thicker and more resistant to injury.",
-                    "B. Loses elasticity and becomes more fragile and thin.",
-                    "C. Produces more oil, making it less likely to dry out.",
-                    "D. Has increased blood flow, leading to faster healing."
-                ]
-            },
-            {
-                q: "A nurse technician is assigned to assist a patient with a weakened right arm to put on a front-opening gown. What is the correct procedure?",
-                a: "B. Put the gown on the right arm first, then the left.",
-                r: "To dress, you 'start with the weak' (put the sleeve on the affected arm first). To undress, you 'start with the strong' (remove the sleeve from the unaffected arm first).",
-                opt: [
-                    "A. Put the gown on the left arm first, then the right.",
-                    "B. Put the gown on the right arm first, then the left.",
-                    "C. It does not matter which arm is dressed first.",
-                    "D. The patient should not wear a gown with a weak arm."
-                ]
-            },
-            {
-                q: "A patient offers a nurse technician a cash tip of $50 as a 'thank you' for the excellent care provided. What is the most appropriate professional response?",
-                a: "B. Politely decline the gift, explaining that it is against hospital policy.",
-                r: "Accepting money from patients is a boundary violation and is prohibited by most healthcare institutions. A verbal 'thank you' or a note is the appropriate way to accept gratitude.",
-                opt: [
-                    "A. Accept the money and put it in the staff breakroom fund.",
-                    "B. Politely decline the gift, explaining that it is against hospital policy.",
-                    "C. Accept the money but report it to the supervisor later.",
-                    "D. Ask the patient to give the money to the nurse instead."
-                ]
-            }
-        ];
-
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let timeLeft = 25 * 60;
-        let timerInterval;
-        let userAnswers = new Array(25).fill(null);
-
-        function startExam() {
-            document.getElementById('welcome-screen').classList.add('hidden');
-            document.getElementById('exam-screen').classList.remove('hidden');
-
-            examQuestions.sort(() => Math.random() - 0.5);
-
-            currentQuestionIndex = 0;
-            userAnswers = new Array(25).fill(null);
-            score = 0;
-
-            document.getElementById('total-question-num').innerText = "25";
-            displayQuestion();
-            startTimer();
+        element.classList.add('selected');
+        const rationale = card.querySelector(`#rationale-${qIndex}`);
+        
+        if (oIndex === questions[qIndex].correct) {
+            score++;
+            element.style.backgroundColor = "#27ae60";
+            element.style.color = "white";
+        } else {
+            element.style.backgroundColor = "#e74c3c";
+            element.style.color = "white";
+            options[questions[qIndex].correct].style.backgroundColor = "#27ae60";
+            options[questions[qIndex].correct].style.color = "white";
         }
 
-        function displayQuestion() {
-            const q = examQuestions[currentQuestionIndex];
-            document.getElementById('current-question-num').innerText = currentQuestionIndex + 1;
-            document.getElementById('question-text').innerText = q.q;
+        rationale.style.display = 'block';
+        document.getElementById(`next-btn-${qIndex}`).style.display = 'block';
+    }
 
-            const progress = (currentQuestionIndex / 25) * 100;
-            document.getElementById('progress-bar').style.width = `${progress}%`;
+    function nextQuestion() {
+        const cards = document.querySelectorAll('.question-card');
+        cards[currentQuestionIndex].classList.remove('active');
+        currentQuestionIndex++;
 
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
+        updateProgress();
 
-            q.opt.forEach((optText) => {
-                const isSelected = userAnswers[currentQuestionIndex] === optText;
-                const card = document.createElement('div');
-                card.className = `option-card p-4 rounded-xl border cursor-pointer flex items-center space-x-3 ${
-                    isSelected
-                        ? 'border-blue-600 bg-blue-50/50 text-blue-900 font-medium shadow-sm'
-                        : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
-                }`;
-
-                card.onclick = () => selectOption(optText);
-                card.innerHTML = `
-                    <div class="h-5 w-5 rounded-full border flex items-center justify-center flex-shrink-0 ${
-                        isSelected ? 'border-blue-600 bg-blue-600 text-white' : 'border-slate-300 text-transparent'
-                    }">
-                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 8"/></svg>
-                    </div>
-                    <span class="text-sm leading-relaxed">${optText}</span>
-                `;
-                container.appendChild(card);
-            });
-            document.getElementById('current-score').innerText = score;
+        if (currentQuestionIndex < questions.length) {
+            cards[currentQuestionIndex].classList.add('active');
+        } else {
+            showResults();
         }
+    }
 
-        function selectOption(optText) {
-            examQuestions[currentQuestionIndex].userAnswer = optText;
-            userAnswers[currentQuestionIndex] = optText;
+    function updateProgress() {
+        const percent = (currentQuestionIndex / questions.length) * 100;
+        document.getElementById('progress-bar').style.width = percent + '%';
+    }
 
-            const q = examQuestions[currentQuestionIndex];
-            if (q.a === optText && !q.counted) {
-                score += 1;
-                q.counted = true;
-            }
-            displayQuestion();
-        }
+    function showResults() {
+        document.getElementById('quiz-container').style.display = 'none';
+        const results = document.getElementById('results-screen');
+        results.style.display = 'block';
+        document.getElementById('score-text').innerText = `You scored ${score} out of ${questions.length}`;
+    }
 
-        function prevQuestion() {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                displayQuestion();
-            }
-        }
-
-        function nextQuestion() {
-            if (currentQuestionIndex < 24) {
-                currentQuestionIndex++;
-                displayQuestion();
-            } else {
-                finishExam();
-            }
-        }
-
-        function startTimer() {
-            clearInterval(timerInterval);
-            timeLeft = 25 * 60;
-            const display = document.getElementById('time-display');
-
-            timerInterval = setInterval(() => {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-
-                display.innerText = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-                if (--timeLeft < 0) {
-                    clearInterval(timerInterval);
-                    finishExam();
-                }
-            }, 1000);
-        }
-
-        function finishExam() {
-            clearInterval(timerInterval);
-            document.getElementById('exam-screen').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-
-            const percentage = Math.round((score / 25) * 100);
-            document.getElementById('final-score').innerText = `${percentage}%`;
-
-            const passStatus = document.getElementById('pass-status');
-            if (percentage >= 70) {
-                passStatus.innerText = "GO (Pass)";
-                passStatus.className = "text-3xl font-black text-green-600";
-                document.getElementById('result-badge').className = "inline-flex items-center justify-center p-4 rounded-full bg-green-50 text-green-600 mb-4";
-            } else {
-                passStatus.innerText = "NOT GO (Fail)";
-                passStatus.className = "text-3xl font-black text-red-600";
-                document.getElementById('result-badge').className = "inline-flex items-center justify-center p-4 rounded-full bg-red-50 text-red-600 mb-4";
-            }
-
-            const container = document.getElementById('rationales-container');
-            container.innerHTML = '';
-
-            // Map original elements into rationales
-            examQuestions.forEach((item, index) => {
-                const isCorrect = item.userAnswer === item.a;
-                const div = document.createElement('div');
-                div.className = `p-5 rounded-xl border ${
-                    isCorrect ? 'bg-green-50/40 border-green-200' : 'bg-red-50/40 border-red-200'
-                }`;
-                div.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <span class="text-xs font-mono font-bold text-slate-500 mb-2 block">Q${index + 1}</span>
-                        <span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-                            isCorrect ? 'bg-green-200 text-green-900' : 'bg-red-200 text-red-900'
-                        }">${isCorrect ? 'Correct' : 'Incorrect'}</span>
-                    </div>
-                    <p class="text-sm font-semibold text-slate-800 mb-3">${item.q}</p>
-                    <div class="space-y-1 text-xs text-slate-600 mb-2">
-                        <div><strong class="text-slate-700">Your Answer:</strong> ${item.userAnswer || 'Not answered'}</div>
-                        <div><strong class="text-slate-700">Key Answer:</strong> ${item.a}</div>
-                    </div>
-                    <p class="text-xs italic text-slate-500 border-l-2 pl-3 border-slate-300 mt-2"><strong class="text-slate-600 not-italic">Rationale:</strong> ${item.r}</p>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function resetExam() {
-            document.getElementById('result-screen').classList.add('hidden');
-            document.getElementById('welcome-screen').classList.remove('hidden');
-        }
-    </script>
+    initQuiz();
+</script>
 </body>
 </html>
